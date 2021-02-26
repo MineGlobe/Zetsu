@@ -1,4 +1,4 @@
-package me.blazingtide.zetsu.permissible.impl.permissible;
+package me.blazingtide.zetsu.permission.impl;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Permissible {
+public @interface PermissionNode {
 
     String value();
 

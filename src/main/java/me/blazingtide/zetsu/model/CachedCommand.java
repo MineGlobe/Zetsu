@@ -1,10 +1,10 @@
-package me.blazingtide.zetsu.schema;
+package me.blazingtide.zetsu.model;
 
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.blazingtide.zetsu.Zetsu;
-import me.blazingtide.zetsu.schema.annotations.Command;
+import me.blazingtide.zetsu.model.annotations.Command;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

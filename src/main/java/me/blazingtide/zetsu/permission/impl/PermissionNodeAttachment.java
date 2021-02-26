@@ -1,18 +1,18 @@
-package me.blazingtide.zetsu.permissible.impl.permissible;
+package me.blazingtide.zetsu.permission.impl;
 
-import me.blazingtide.zetsu.permissible.PermissibleAttachment;
+import me.blazingtide.zetsu.permission.PermissionAttachment;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class BukkitPermissionAttachment implements PermissibleAttachment<Permissible> {
+public class PermissionNodeAttachment implements PermissionAttachment<PermissionNode> {
 
     @Override
-    public boolean test(Permissible annotation, CommandSender sender) {
+    public boolean test(PermissionNode annotation, CommandSender sender) {
         return sender.hasPermission(annotation.value());
     }
 
     @Override
-    public void onFail(CommandSender sender, Permissible annotation) {
+    public void onFail(CommandSender sender, PermissionNode annotation) {
         sender.sendMessage(ChatColor.RED + "I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.");
     }
 }

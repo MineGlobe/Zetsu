@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import me.blazingtide.zetsu.Zetsu;
 import me.blazingtide.zetsu.adapters.ParameterAdapter;
-import me.blazingtide.zetsu.permissible.PermissibleAttachment;
-import me.blazingtide.zetsu.schema.CachedCommand;
-import me.blazingtide.zetsu.schema.annotations.parameter.Param;
+import me.blazingtide.zetsu.permission.PermissionAttachment;
+import me.blazingtide.zetsu.model.CachedCommand;
+import me.blazingtide.zetsu.model.annotations.parameter.Param;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -57,7 +57,7 @@ public class CommandProcessor {
 
             for (Class<? extends Annotation> aClass : zetsu.getPermissibleAttachments().keySet().stream().filter(method::isAnnotationPresent).collect(Collectors.toSet())) {
                 final Annotation annotation = method.getAnnotation(aClass);
-                final PermissibleAttachment<Annotation> attachment = getPermissibleAttachment(aClass);
+                final PermissionAttachment<Annotation> attachment = getPermissibleAttachment(aClass);
 
                 if (!attachment.test(annotation, sender)) {
                     attachment.onFail(sender, annotation);
@@ -147,8 +147,8 @@ public class CommandProcessor {
         sender.sendMessage(builder.toString());
     }
 
-    private PermissibleAttachment<Annotation> getPermissibleAttachment(Class<? extends Annotation> clazz) {
-        return (PermissibleAttachment<Annotation>) zetsu.getPermissibleAttachments().get(clazz);
+    private PermissionAttachment<Annotation> getPermissibleAttachment(Class<? extends Annotation> clazz) {
+        return (PermissionAttachment<Annotation>) zetsu.getPermissibleAttachments().get(clazz);
     }
 
 }

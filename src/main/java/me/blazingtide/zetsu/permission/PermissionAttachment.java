@@ -1,4 +1,4 @@
-package me.blazingtide.zetsu.permissible;
+package me.blazingtide.zetsu.permission;
 
 import org.bukkit.command.CommandSender;
 
@@ -12,7 +12,7 @@ import java.lang.annotation.Annotation;
  *
  * @param <T>
  */
-public interface PermissibleAttachment<T extends Annotation> {
+public interface PermissionAttachment<T extends Annotation> {
 
     boolean test(T annotation, CommandSender sender);
 

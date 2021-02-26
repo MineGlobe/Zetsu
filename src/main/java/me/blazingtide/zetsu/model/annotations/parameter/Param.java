@@ -1,4 +1,4 @@
-package me.blazingtide.zetsu.schema.annotations.parameter;
+package me.blazingtide.zetsu.model.annotations.parameter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

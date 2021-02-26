@@ -2,7 +2,7 @@ package me.blazingtide.zetsu.tabcomplete.listener;
 
 import lombok.AllArgsConstructor;
 import me.blazingtide.zetsu.processor.CommandProcessor;
-import me.blazingtide.zetsu.schema.CachedCommand;
+import me.blazingtide.zetsu.model.CachedCommand;
 import me.blazingtide.zetsu.tabcomplete.TabCompleteHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
