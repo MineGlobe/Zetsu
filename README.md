@@ -19,7 +19,7 @@ You can also use maven:
 <dependency>
     <groupId>me.blazingtide</groupId>
     <artifactId>Zetsu</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <scope>compile</scope>
 </dependency>
 ```
