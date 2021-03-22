@@ -30,10 +30,10 @@ public class CommandProcessor {
         newArgs.removeIf(str -> str.isEmpty() || str.trim().isEmpty());
 
         for (int i = newArgs.size(); i >= 0; i--) {
-            String sentWithLabel = String.join(" ", newArgs.subList(0, i));
+            String sentWithLabel = String.join(Zetsu.CMD_SPLITTER, newArgs.subList(0, i));
 
             for (CachedCommand cmd : cmds) {
-                String cachedWithLabel = String.join(" ", cmd.getArgs());
+                String cachedWithLabel = String.join(Zetsu.CMD_SPLITTER, cmd.getArgs());
 
                 if (sentWithLabel.equalsIgnoreCase(cachedWithLabel)) {
                     return cmd;
@@ -140,13 +140,14 @@ public class CommandProcessor {
             if (parameter.isAnnotationPresent(Param.class)) {
                 builder.append("<").append(parameter.getAnnotation(Param.class).value()).append("> ");
             } else {
-                builder.append("<").append(parameter.getType().getSimpleName()).append("> ");
+                builder.append("<").append(parameter.getType().getSimpleName().toLowerCase()).append("> ");
             }
         }
 
         sender.sendMessage(builder.toString());
     }
 
+    @SuppressWarnings("unchecked")
     private PermissibleAttachment<Annotation> getPermissibleAttachment(Class<? extends Annotation> clazz) {
         return (PermissibleAttachment<Annotation>) zetsu.getPermissibleAttachments().get(clazz);
     }

@@ -10,16 +10,16 @@ You can also use maven:
 
 ```xml
 <repositories>
-   	<repository>
-   		<id>jitpack.io</id>
-   		<url>https://jitpack.io</url>
+   <repository>
+   	<id>jitpack.io</id>
+   	<url>https://jitpack.io</url>
    </repository>
 </repositories>
 
 <dependency>
     <groupId>me.blazingtide</groupId>
     <artifactId>Zetsu</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <scope>compile</scope>
 </dependency>
 ```

@@ -51,6 +51,7 @@ public class Zetsu {
         registerParameterAdapter(Integer.class, new IntegerTypeAdapter());
         registerParameterAdapter(Double.class, new DoubleTypeAdapter());
         registerParameterAdapter(Boolean.class, new BooleanTypeAdapter());
+        registerParameterAdapter(Long.class, new LongTypeAdapter());
 
         registerPermissibleAttachment(Permissible.class, new BukkitPermissionAttachment());
     }
