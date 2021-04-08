@@ -1,5 +1,6 @@
 package me.blazingtide.zetsu.tabcomplete.listener;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import jdk.internal.joptsimple.internal.Strings;
 import lombok.AllArgsConstructor;
@@ -9,10 +10,13 @@ import me.blazingtide.zetsu.processor.CommandProcessor;
 import me.blazingtide.zetsu.schema.CachedCommand;
 import me.blazingtide.zetsu.schema.CachedTabComplete;
 import me.blazingtide.zetsu.schema.annotations.parameter.Completable;
+import me.blazingtide.zetsu.schema.annotations.parameter.Default;
 import me.blazingtide.zetsu.tabcomplete.TabCompleteHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Parameter;
 import java.util.*;
@@ -20,21 +24,26 @@ import java.util.*;
 @AllArgsConstructor
 public class TabCompleteListener implements TabCompleter {
 
-    private final Map<CachedCommand, Map<Integer, CachedTabComplete>> completionsCachce = Maps.newHashMap(); //Instead of looping every time, we store the constant args ONCE
+    private final @NotNull Map<CachedCommand, Map<Integer, CachedTabComplete>> completionsCachce = Maps.newHashMap(); //Instead of looping every time, we store the constant args ONCE
 
-    private final Zetsu zetsu;
-    private final TabCompleteHandler handler;
-    private final CommandProcessor processor;
+    private final @NotNull Zetsu zetsu;
+    private final @NotNull TabCompleteHandler handler;
+    private final @NotNull CommandProcessor processor;
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command ignored, String label, String[] args) {
+    @Nullable
+    public List<String> onTabComplete(@NotNull CommandSender sender, @Nullable Command ignored, @NotNull String label, @NotNull String[] args) {
         final CachedCommand command = processor.find(label.trim(), args);
 
         if (command == null) {
             return null; //should not happen but just incase
         }
 
-        final List<String> toReturn = handler.requestSubcommands(args.length != 0 ? label + Zetsu.CMD_SPLITTER + Strings.join(args, Zetsu.CMD_SPLITTER) : label);
+        List<String> toReturn = handler.requestSubcommands(args.length != 0 ? label + Zetsu.CMD_SPLITTER + Strings.join(args, Zetsu.CMD_SPLITTER) : label);
+
+        if (toReturn == null) {
+            toReturn = Lists.newArrayList();
+        }
 
         int start = args.length - command.getArgs().size();
 
@@ -60,6 +69,10 @@ public class TabCompleteListener implements TabCompleter {
                     complete.addAll(Arrays.asList(completable.value()));
                 }
 
+                if (zetsu.isUseDefaultsInTabComplete() && parameter.isAnnotationPresent(Default.class)) {
+                    complete.add(parameter.getAnnotation(Default.class).value());
+                }
+
                 completions.put(i++, new CachedTabComplete(parameterAdapter, complete));
             }
 
@@ -69,13 +82,13 @@ public class TabCompleteListener implements TabCompleter {
         if (!cache.isEmpty() && cache.size() >= start) {
             CachedTabComplete complete = cache.get(start);
 
-            if (complete != null){
+            if (complete != null) {
                 toReturn.addAll(complete.getConstant());
 
-                if (complete.getParameterAdapter() != null){
-                    List<String> tabComplete = complete.getParameterAdapter().processTabComplete(sender, label, command);
+                if (complete.getParameterAdapter() != null) {
+                    List<String> tabComplete = complete.getParameterAdapter().processTabComplete(sender, command);
 
-                    if (tabComplete != null){
+                    if (tabComplete != null) {
                         toReturn.addAll(tabComplete);
                     }
                 }

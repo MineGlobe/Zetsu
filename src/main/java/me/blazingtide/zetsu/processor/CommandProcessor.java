@@ -11,6 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -24,7 +26,8 @@ public class CommandProcessor {
 
     protected final Zetsu zetsu;
 
-    public CachedCommand find(String label, String[] args) {
+    @Nullable
+    public CachedCommand find(@NotNull String label, @NotNull String[] args) {
         final List<CachedCommand> cmds = zetsu.getLabelMap().get(label); //idk never should be null.
         final List<String> newArgs = Lists.newArrayList(args);
         newArgs.removeIf(str -> str.isEmpty() || str.trim().isEmpty());
@@ -45,7 +48,7 @@ public class CommandProcessor {
     }
 
     //The args is for the parameter, IGNORE the subcommand type args
-    protected void invoke(CachedCommand command, String[] args, CommandSender sender) {
+    protected void invoke(@NotNull CachedCommand command, @NotNull String[] args, @NotNull CommandSender sender) {
         final Runnable runnable = () -> {
             final Method method = command.getMethod();
             final Object[] objects = new Object[method.getParameterCount()];
@@ -59,7 +62,7 @@ public class CommandProcessor {
                 final Annotation annotation = method.getAnnotation(aClass);
                 final PermissibleAttachment<Annotation> attachment = getPermissibleAttachment(aClass);
 
-                if (!attachment.test(annotation, sender)) {
+                if (attachment != null && !attachment.test(annotation, sender)) {
                     attachment.onFail(sender, annotation);
                     return;
                 }
@@ -126,7 +129,7 @@ public class CommandProcessor {
         }
     }
 
-    private void sendRequiredArgsMessage(CommandSender sender, Method method, List<String> args, String label) {
+    private void sendRequiredArgsMessage(@NotNull CommandSender sender, @NotNull Method method, @NotNull List<String> args, @NotNull String label) {
         final StringBuilder builder = new StringBuilder();
         builder.append(ChatColor.RED).append("Invalid Usage: /").append(label).append(" ");
 
@@ -147,9 +150,13 @@ public class CommandProcessor {
         sender.sendMessage(builder.toString());
     }
 
+    @Nullable
     @SuppressWarnings("unchecked")
     private PermissibleAttachment<Annotation> getPermissibleAttachment(Class<? extends Annotation> clazz) {
-        return (PermissibleAttachment<Annotation>) zetsu.getPermissibleAttachments().get(clazz);
+        if (zetsu.getPermissibleAttachments().containsKey(clazz)) {
+            return (PermissibleAttachment<Annotation>) zetsu.getPermissibleAttachments().get(clazz);
+        }
+        return null;
     }
 
 }

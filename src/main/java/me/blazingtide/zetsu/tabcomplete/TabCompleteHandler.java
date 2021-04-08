@@ -1,12 +1,12 @@
 package me.blazingtide.zetsu.tabcomplete;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import jdk.internal.joptsimple.internal.Strings;
 import lombok.Getter;
 import me.blazingtide.zetsu.Zetsu;
 import me.blazingtide.zetsu.schema.CachedCommand;
 import me.blazingtide.zetsu.tabcomplete.listener.TabCompleteListener;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +28,16 @@ public class TabCompleteHandler {
         this.listener = new TabCompleteListener(zetsu, this, zetsu.getProcessor());
     }
 
+    @Deprecated
     public Set<String> request(String command) {
-        return Sets.newHashSet();
+        throw new UnsupportedOperationException("Unfinished");
     }
 
-    public List<String> requestSubcommands(String label) {
+    @Nullable
+    public List<String> requestSubcommands(@Nullable String label) {
+        if (label == null) {
+            return null;
+        }
         /*
         very slow because if we have ~100 commands registered, it's going to do a loop every tab complete = lags the server...
         even tho it's barely noticeable, it will add up with a lot of players
@@ -62,7 +67,7 @@ public class TabCompleteHandler {
                 }
 
                 // We need this if statement for /tabablecommand tab1 tab2 because /tabablecommand tab3 will show tab2 for the next one
-                if ((command.getLabel() + Zetsu.CMD_SPLITTER + Strings.join(command.getArgs(), Zetsu.CMD_SPLITTER)).startsWith(string)) {
+                if ((command.getLabel() + Zetsu.CMD_SPLITTER + StringUtils.join(command.getArgs(), Zetsu.CMD_SPLITTER)).startsWith(string)) {
                     list.add(command.getArgs().get((string.endsWith(Zetsu.CMD_SPLITTER) ? split.length : split.length - 1) - 1));
                 }
             }
