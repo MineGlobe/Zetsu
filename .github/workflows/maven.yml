@@ -23,5 +23,4 @@ jobs:
       - name: Upload Zetsu.jar
         uses: actions/download-artifact@v2
         with:
-          name: Zetsu.jar
-          path: /home/runner/work/Zetsu/Zetsu/target/Zetsu.jar
+          name: target
