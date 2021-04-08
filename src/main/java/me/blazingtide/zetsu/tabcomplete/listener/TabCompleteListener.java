@@ -2,7 +2,6 @@ package me.blazingtide.zetsu.tabcomplete.listener;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import jdk.internal.joptsimple.internal.Strings;
 import lombok.AllArgsConstructor;
 import me.blazingtide.zetsu.Zetsu;
 import me.blazingtide.zetsu.adapters.ParameterAdapter;
@@ -12,6 +11,7 @@ import me.blazingtide.zetsu.schema.CachedTabComplete;
 import me.blazingtide.zetsu.schema.annotations.parameter.Completable;
 import me.blazingtide.zetsu.schema.annotations.parameter.Default;
 import me.blazingtide.zetsu.tabcomplete.TabCompleteHandler;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -39,7 +39,7 @@ public class TabCompleteListener implements TabCompleter {
             return null; //should not happen but just incase
         }
 
-        List<String> toReturn = handler.requestSubcommands(args.length != 0 ? label + Zetsu.CMD_SPLITTER + Strings.join(args, Zetsu.CMD_SPLITTER) : label);
+        List<String> toReturn = handler.requestSubcommands(args.length != 0 ? label + Zetsu.CMD_SPLITTER + StringUtils.join(args, Zetsu.CMD_SPLITTER) : label);
 
         if (toReturn == null) {
             toReturn = Lists.newArrayList();
