@@ -29,9 +29,9 @@ public class CommandProcessor {
 
     @Nullable
     public CachedCommand find(@NotNull String label, @NotNull String[] args) {
-        final List<CachedCommand> cmds = zetsu.getLabelMap().get(label); //idk never should be null.
+        final List<CachedCommand> cmds = zetsu.getLabelMap().get(label); // idk never should be null.
         final List<String> newArgs = Lists.newArrayList(args);
-        newArgs.removeIf(str -> str.isEmpty() || str.trim().isEmpty());
+        newArgs.removeIf(str -> str.trim().isEmpty());
 
         for (int i = newArgs.size(); i >= 0; i--) {
             String sentWithLabel = String.join(Zetsu.CMD_SPLITTER, newArgs.subList(0, i));
