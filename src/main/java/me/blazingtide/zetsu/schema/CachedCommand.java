@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.blazingtide.zetsu.Zetsu;
 import me.blazingtide.zetsu.schema.annotations.Command;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -14,16 +15,17 @@ import java.util.List;
 @Getter
 public class CachedCommand {
 
-    private final String label;
-    private final List<String> args;
+    private final @NotNull String label;
+    private final @NotNull List<String> args;
 
-    private final String description;
+    private final @NotNull String description;
     private final boolean async;
-    private final Method method;
-    private final Object object;
+    private final @NotNull Method method;
+    private final @NotNull Object object;
 
     //TODO: Add default parameters
-    public static List<CachedCommand> of(Command annotation, Method method, Object object) {
+    @NotNull
+    public static List<CachedCommand> of(@NotNull Command annotation, @NotNull Method method, @NotNull Object object) {
         final List<CachedCommand> commands = Lists.newArrayList();
 
         for (String label : annotation.labels()) {

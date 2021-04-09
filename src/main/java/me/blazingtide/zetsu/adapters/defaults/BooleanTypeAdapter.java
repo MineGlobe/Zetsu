@@ -1,15 +1,14 @@
 package me.blazingtide.zetsu.adapters.defaults;
 
 import me.blazingtide.zetsu.adapters.ParameterAdapter;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class BooleanTypeAdapter implements ParameterAdapter<Boolean> {
 
     @Override
-    public Boolean process(String str) {
+    public Boolean process(@NotNull String str) {
         if (str.equalsIgnoreCase("yes")) {
             return true;
         } else if (str.equalsIgnoreCase("no")) {
@@ -19,8 +18,8 @@ public class BooleanTypeAdapter implements ParameterAdapter<Boolean> {
     }
 
     @Override
-    public void processException(CommandSender sender, String given, Exception exception) {
+    public void processException(@NotNull CommandSender sender, @NotNull String given, @NotNull Exception exception) {
         sender.sendMessage(ChatColor.RED + "'" + given + "' is not a valid boolean.");
     }
-    
+
 }

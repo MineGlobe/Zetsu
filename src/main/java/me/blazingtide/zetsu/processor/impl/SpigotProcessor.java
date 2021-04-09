@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -59,7 +60,7 @@ public class SpigotProcessor extends CommandProcessor implements CommandExecutor
         return false;
     }
 
-    private void sendHelpMessage(String label, int page, CommandSender sender) {
+    private void sendHelpMessage(@NotNull String label, int page, @NotNull CommandSender sender) {
         final ArrayList<String> commands = Lists.newArrayList();
 
         sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
