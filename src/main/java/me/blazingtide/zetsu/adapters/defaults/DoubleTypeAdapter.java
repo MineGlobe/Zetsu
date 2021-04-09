@@ -16,5 +16,4 @@ public class DoubleTypeAdapter implements ParameterAdapter<Double> {
     public void processException(@NotNull CommandSender sender, @NotNull String given, @NotNull Exception exception) {
         sender.sendMessage(ChatColor.RED + "'" + given + "' is not a valid number.");
     }
-
 }

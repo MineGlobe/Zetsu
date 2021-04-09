@@ -23,7 +23,6 @@ public class TabCompleteHandler {
 
     public TabCompleteHandler(Zetsu zetsu) {
         this.zetsu = zetsu;
-
         this.listener = new TabCompleteListener(zetsu, this, zetsu.getProcessor());
     }
 
@@ -33,7 +32,7 @@ public class TabCompleteHandler {
     }
 
     @Nullable
-    public Collection<String> requestSubcommands(@Nullable String label) {
+    public List<String> requestSubcommands(@Nullable String label) {
         if (label == null) {
             return null;
         }

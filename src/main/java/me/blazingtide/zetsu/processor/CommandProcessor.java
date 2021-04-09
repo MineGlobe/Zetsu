@@ -52,7 +52,8 @@ public class CommandProcessor {
     protected void invoke(@NotNull CachedCommand command, @NotNull String[] args, @NotNull CommandSender sender) {
         final Runnable runnable = () -> {
             final Method method = command.getMethod();
-            final Object[] objects = new Object[method.getParameterCount()];
+            int parameterCount = method.getParameterCount();
+            final Object[] objects = new Object[parameterCount];
 
             if (method.getParameterCount() <= 0) {
                 sender.sendMessage(ChatColor.RED + "This command is incorrectly setup!" +
@@ -73,12 +74,12 @@ public class CommandProcessor {
                 }
             }
 
-            if (method.getParameters()[0].getType() == Player.class && !(sender instanceof Player)) {
+            if (command.isPlayersOnly() && !(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "This command can only be ran by players.");
                 return;
             }
 
-            if ((method.getParameterCount() - 1) > args.length) {
+            if ((parameterCount - 1) > args.length) {
                 sendRequiredArgsMessage(sender, method, command.getArgs(), command.getLabel());
                 return;
             }
@@ -90,7 +91,7 @@ public class CommandProcessor {
             StringBuilder strBuilder = new StringBuilder();
 
             for (int i = 0; i < args.length; i++) {
-                if (method.getParameterCount() <= i + 1)
+                if (parameterCount <= i + 1)
                     continue;
 
                 final Parameter parameter = method.getParameters()[i + 1];
@@ -103,7 +104,7 @@ public class CommandProcessor {
 
                 final ParameterAdapter<?> adapter = zetsu.getParameterAdapters().get(parameter.getType());
 
-                if (parameter.getType() == String.class && method.getParameterCount() - 1 == i + 1) {
+                if (parameter.getType() == String.class && parameterCount - 1 == i + 1) {
                     for (int j = i; j < args.length; j++) {
                         strBuilder.append(" ").append(args[j]);
                     }
