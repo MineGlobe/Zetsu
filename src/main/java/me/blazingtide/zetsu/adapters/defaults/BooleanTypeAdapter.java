@@ -9,17 +9,18 @@ public class BooleanTypeAdapter implements ParameterAdapter<Boolean> {
 
     @Override
     public Boolean process(@NotNull String str) {
-        if (str.equalsIgnoreCase("yes")) {
+        String lowered = str.toLowerCase();
+        if (lowered.equals("yes")) {
             return true;
-        } else if (str.equalsIgnoreCase("no")) {
+        } else if (lowered.equals("no")) {
             return false;
         }
-        return Boolean.valueOf(str);
+
+        return lowered.equals("true");
     }
 
     @Override
     public void processException(@NotNull CommandSender sender, @NotNull String given, @NotNull Exception exception) {
         sender.sendMessage(ChatColor.RED + "'" + given + "' is not a valid boolean.");
     }
-
 }

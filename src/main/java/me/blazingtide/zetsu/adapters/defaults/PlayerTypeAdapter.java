@@ -18,5 +18,4 @@ public class PlayerTypeAdapter implements ParameterAdapter<Player> {
     public void processException(@NotNull CommandSender sender, @NotNull String given, @NotNull Exception exception) {
         sender.sendMessage(ChatColor.RED + "'" + given + "' is not online.");
     }
-
 }

@@ -27,7 +27,10 @@ public class BukkitCommand extends Command {
 
     @Override
     @Nullable
-    public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
-        return handler.getListener().onTabComplete(sender, this, alias, args); //It's easier to separate chunks of code into different classes.
+    public List<String> tabComplete(@NotNull CommandSender sender,
+                                    @NotNull String alias,
+                                    @NotNull String[] args) throws IllegalArgumentException {
+        //It's easier to separate chunks of code into different classes.
+        return handler.getListener().onTabComplete(sender, this, alias, args);
     }
 }

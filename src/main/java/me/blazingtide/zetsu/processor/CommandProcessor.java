@@ -18,6 +18,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,9 +29,9 @@ public class CommandProcessor {
 
     @Nullable
     public CachedCommand find(@NotNull String label, @NotNull String[] args) {
-        final List<CachedCommand> cmds = zetsu.getLabelMap().get(label); //idk never should be null.
+        final List<CachedCommand> cmds = zetsu.getLabelMap().get(label); // idk never should be null.
         final List<String> newArgs = Lists.newArrayList(args);
-        newArgs.removeIf(str -> str.isEmpty() || str.trim().isEmpty());
+        newArgs.removeIf(str -> str.trim().isEmpty());
 
         for (int i = newArgs.size(); i >= 0; i--) {
             String sentWithLabel = String.join(Zetsu.CMD_SPLITTER, newArgs.subList(0, i));
@@ -51,14 +52,19 @@ public class CommandProcessor {
     protected void invoke(@NotNull CachedCommand command, @NotNull String[] args, @NotNull CommandSender sender) {
         final Runnable runnable = () -> {
             final Method method = command.getMethod();
-            final Object[] objects = new Object[method.getParameterCount()];
+            int parameterCount = method.getParameterCount();
+            final Object[] objects = new Object[parameterCount];
 
             if (method.getParameterCount() <= 0) {
-                sender.sendMessage(ChatColor.RED + "This command is incorrectly setup! Please fix immediately. (Error: Invalid amount of method parameters)");
+                sender.sendMessage(ChatColor.RED + "This command is incorrectly setup!" +
+                        " Please fix immediately. (Error: Invalid amount of method parameters)");
                 return;
             }
 
-            for (Class<? extends Annotation> aClass : zetsu.getPermissibleAttachments().keySet().stream().filter(method::isAnnotationPresent).collect(Collectors.toSet())) {
+            for (Class<? extends Annotation> aClass : zetsu.getPermissibleAttachments().keySet()
+                    .stream()
+                    .filter(method::isAnnotationPresent)
+                    .collect(Collectors.toCollection(ArrayDeque::new))) { // ArrayDeque is faster than a HashSet
                 final Annotation annotation = method.getAnnotation(aClass);
                 final PermissibleAttachment<Annotation> attachment = getPermissibleAttachment(aClass);
 
@@ -68,41 +74,45 @@ public class CommandProcessor {
                 }
             }
 
-            if (method.getParameters()[0].getType() == Player.class && !(sender instanceof Player)) {
+            if (command.isPlayersOnly() && !(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "This command can only be ran by players.");
                 return;
             }
 
-            if ((method.getParameterCount() - 1) > args.length) {
+            if ((parameterCount - 1) > args.length) {
                 sendRequiredArgsMessage(sender, method, command.getArgs(), command.getLabel());
                 return;
             }
 
             objects[0] = sender; //The first parameter is always the sender
 
-            StringBuilder strBuilder = new StringBuilder(); //If the parameter is a string and is the last param in the method then we concat the arguments.
+            //If the parameter is a string and is the last
+            // param in the method then we concat the arguments.
+            StringBuilder strBuilder = new StringBuilder();
+
             for (int i = 0; i < args.length; i++) {
-                if (method.getParameterCount() <= i + 1) {
+                if (parameterCount <= i + 1)
                     continue;
-                }
 
                 final Parameter parameter = method.getParameters()[i + 1];
 
                 if (!zetsu.getParameterAdapters().containsKey(parameter.getType())) {
-                    sender.sendMessage(ChatColor.RED + "This command is incorrectly setup! Please fix immediately. (Error: Parameter Type does not have an adapter)");
+                    sender.sendMessage(ChatColor.RED + "This command is incorrectly setup!" +
+                            " Please fix immediately. (Error: Parameter Type does not have an adapter)");
                     return;
                 }
 
                 final ParameterAdapter<?> adapter = zetsu.getParameterAdapters().get(parameter.getType());
 
-                if (parameter.getType() == String.class && method.getParameterCount() - 1 == i + 1) {
+                if (parameter.getType() == String.class && parameterCount - 1 == i + 1) {
                     for (int j = i; j < args.length; j++) {
                         strBuilder.append(" ").append(args[j]);
                     }
                 }
 
                 try {
-                    objects[i + 1] = strBuilder.length() != 0 ? strBuilder.toString().trim() : adapter.process(args[i].trim());
+                    objects[i + 1] = strBuilder.length() != 0 ?
+                            strBuilder.toString().trim() : adapter.process(args[i].trim());
 
                     if (objects[i + 1] == null) {
                         adapter.processException(sender, args[i], new NullPointerException());
@@ -117,19 +127,24 @@ public class CommandProcessor {
             try {
                 method.invoke(command.getObject(), objects);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                sender.sendMessage(ChatColor.RED + "An error occurred while processing this command. Please contact a developer and report this as a bug.");
+                sender.sendMessage(ChatColor.RED + "An error occurred while processing" +
+                        " this command. Please contact a developer and report this as a bug.");
                 e.printStackTrace();
             }
         };
 
         if (command.isAsync()) {
-            Bukkit.getScheduler().runTaskAsynchronously(zetsu.getPlugin(), runnable);
-        } else {
-            runnable.run();
+            Zetsu.EXECUTOR.execute(runnable);
+            return;
         }
+
+        runnable.run();
     }
 
-    private void sendRequiredArgsMessage(@NotNull CommandSender sender, @NotNull Method method, @NotNull List<String> args, @NotNull String label) {
+    private void sendRequiredArgsMessage(@NotNull CommandSender sender,
+                                         @NotNull Method method,
+                                         @NotNull List<String> args,
+                                         @NotNull String label) {
         final StringBuilder builder = new StringBuilder();
         builder.append(ChatColor.RED).append("Invalid Usage: /").append(label).append(" ");
 
