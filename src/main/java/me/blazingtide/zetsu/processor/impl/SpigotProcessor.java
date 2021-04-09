@@ -20,7 +20,8 @@ import java.util.ArrayList;
 
 public class SpigotProcessor extends CommandProcessor implements CommandExecutor {
 
-    public static int MAX_ELEMENTS_HELP_PAGE = 10; //Public & not final just incase someone wants to change this in the future.
+    //Public & not final just in case someone wants to change this in the future.
+    public static int MAX_ELEMENTS_HELP_PAGE = 10;
 
     public SpigotProcessor(Zetsu zetsu) {
         super(zetsu);
@@ -63,8 +64,10 @@ public class SpigotProcessor extends CommandProcessor implements CommandExecutor
     private void sendHelpMessage(@NotNull String label, int page, @NotNull CommandSender sender) {
         final ArrayList<String> commands = Lists.newArrayList();
 
-        sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
-        sender.sendMessage(ChatColor.GOLD + StringUtils.capitalize(label) + ChatColor.GRAY + " -" + ChatColor.WHITE + " (Command Help)");
+        sender.sendMessage(ChatColor.GRAY.toString() +
+                ChatColor.STRIKETHROUGH + "----------------------------------------");
+        sender.sendMessage(ChatColor.GOLD + StringUtils.capitalize(label)
+                + ChatColor.GRAY + " -" + ChatColor.WHITE + " (Command Help)");
         sender.sendMessage(" ");
 
         for (CachedCommand command : zetsu.getLabelMap().get(label)) {
@@ -81,7 +84,10 @@ public class SpigotProcessor extends CommandProcessor implements CommandExecutor
                 }
             }
 
-            commands.add(" " + ChatColor.YELLOW + "/" + label + " " + String.join(" ", command.getArgs()) + " " + builder.toString().trim() + ChatColor.GRAY + " - " + ChatColor.WHITE + command.getDescription());
+            commands.add(" " + ChatColor.YELLOW + "/" + label + " " +
+                    String.join(" ", command.getArgs()) + " " +
+                    builder.toString().trim() + ChatColor.GRAY + " - "
+                    + ChatColor.WHITE + command.getDescription());
         }
 
         int start = (page - 1) * MAX_ELEMENTS_HELP_PAGE;
@@ -97,8 +103,10 @@ public class SpigotProcessor extends CommandProcessor implements CommandExecutor
         int maxPage = commands.size() / MAX_ELEMENTS_HELP_PAGE + 1;
 
         sender.sendMessage(" ");
-        sender.sendMessage(ChatColor.GOLD + "You're on page " + ChatColor.WHITE + page + ChatColor.GOLD + " of " + ChatColor.WHITE + maxPage + ChatColor.GOLD + ".");
-        sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------------------------------------");
+        sender.sendMessage(ChatColor.GOLD + "You're on page " + ChatColor.WHITE + page +
+                ChatColor.GOLD + " of " + ChatColor.WHITE + maxPage + ChatColor.GOLD + ".");
+        sender.sendMessage(ChatColor.GRAY.toString() +
+                ChatColor.STRIKETHROUGH + "----------------------------------------");
     }
 
 }

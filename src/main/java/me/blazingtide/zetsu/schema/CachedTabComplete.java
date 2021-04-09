@@ -13,6 +13,7 @@ import java.util.List;
 public class CachedTabComplete {
     @Nullable
     final ParameterAdapter<?> parameterAdapter;
+
     @NotNull
     final List<String> constant;
 }

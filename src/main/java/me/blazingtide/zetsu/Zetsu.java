@@ -32,13 +32,15 @@ import java.util.Map;
 public class Zetsu {
     public static @NotNull String CMD_SPLITTER = " "; //Splitter for commands / arguments
 
-    //Storing labels && commands associated with the label is faster than looping through all of the labels for no reason.
-    private final @NotNull Map<String, List<CachedCommand>> labelMap = Maps.newHashMap();
-    private final @NotNull Map<Class<?>, ParameterAdapter<?>> parameterAdapters = Maps.newConcurrentMap(); //Multithreading :D
-    private final @NotNull Map<Class<? extends Annotation>, PermissibleAttachment<? extends Annotation>> permissibleAttachments = Maps.newConcurrentMap();
-    private final @NotNull SpigotProcessor processor = new SpigotProcessor(this);
-    private final @NotNull TabCompleteHandler tabCompleteHandler = new TabCompleteHandler(this);
-    private final @NotNull JavaPlugin plugin;
+    // Storing labels & commands associated with the label is faster
+    // than looping through all of the labels for no reason.
+    private final Map<String, List<CachedCommand>> labelMap = Maps.newHashMap();
+    private final Map<Class<?>, ParameterAdapter<?>> parameterAdapters = Maps.newConcurrentMap(); //Multithreading :D
+    private final Map<Class<? extends Annotation>, PermissibleAttachment<? extends Annotation>> permissibleAttachments
+            = Maps.newConcurrentMap();
+    private final SpigotProcessor processor = new SpigotProcessor(this);
+    private final TabCompleteHandler tabCompleteHandler = new TabCompleteHandler(this);
+    private final JavaPlugin plugin;
     private @Nullable CommandMap commandMap = getCommandMap();
 
     @Setter
@@ -89,7 +91,8 @@ public class Zetsu {
      * @param attachment The attachment
      * @param <T>        Type
      */
-    public <T extends Annotation> void registerPermissibleAttachment(@NotNull Class<T> clazz, @NotNull PermissibleAttachment<T> attachment) {
+    public <T extends Annotation> void registerPermissibleAttachment(@NotNull Class<T> clazz,
+                                                                     @NotNull PermissibleAttachment<T> attachment) {
         permissibleAttachments.putIfAbsent(clazz, attachment);
     }
 
@@ -113,18 +116,25 @@ public class Zetsu {
             List<CachedCommand> commands = CachedCommand.of(method.getAnnotation(Command.class), method, object);
 
             for (CachedCommand command : commands) {
-                org.bukkit.command.Command cmd = commandMap.getCommand(command.getLabel());
+                if (commandMap != null) {
+                    org.bukkit.command.Command cmd = commandMap.getCommand(command.getLabel());
 
-                if (cmd == null) {
-                    BukkitCommand bukkitCommand = new BukkitCommand(command.getLabel(), processor, tabCompleteHandler);
-                    bukkitCommand.setDescription(command.getDescription());
+                    if (cmd == null) {
+                        BukkitCommand bukkitCommand = new BukkitCommand(
+                                command.getLabel(),
+                                processor,
+                                tabCompleteHandler
+                        );
+                        bukkitCommand.setDescription(command.getDescription());
 
-                    commandMap.register(fallbackPrefix, bukkitCommand);
+                        commandMap.register(fallbackPrefix, bukkitCommand);
+                    }
+
+                    labelMap.putIfAbsent(command.getLabel(), new ArrayList<>());
+                    labelMap.get(command.getLabel()).add(command);
+                    labelMap.get(command.getLabel()).sort((o1, o2) ->
+                            o2.getMethod().getParameterCount() - o1.getMethod().getParameterCount());
                 }
-
-                labelMap.putIfAbsent(command.getLabel(), new ArrayList<>());
-                labelMap.get(command.getLabel()).add(command);
-                labelMap.get(command.getLabel()).sort((o1, o2) -> o2.getMethod().getParameterCount() - o1.getMethod().getParameterCount());
             }
         }
     }

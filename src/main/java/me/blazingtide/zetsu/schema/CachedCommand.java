@@ -31,7 +31,14 @@ public class CachedCommand {
         for (String label : annotation.labels()) {
             final String[] split = label.split(Zetsu.CMD_SPLITTER);
 
-            commands.add(new CachedCommand(split[0], Arrays.asList(split).subList(1, split.length), annotation.description(), annotation.async(), method, object));
+            commands.add(new CachedCommand(
+                    split[0],
+                    Arrays.asList(split).subList(1, split.length),
+                    annotation.description(),
+                    annotation.async(),
+                    method,
+                    object)
+            );
         }
 
         return commands;

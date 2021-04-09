@@ -18,6 +18,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,7 +59,10 @@ public class CommandProcessor {
                 return;
             }
 
-            for (Class<? extends Annotation> aClass : zetsu.getPermissibleAttachments().keySet().stream().filter(method::isAnnotationPresent).collect(Collectors.toSet())) {
+            for (Class<? extends Annotation> aClass : zetsu.getPermissibleAttachments().keySet()
+                    .stream()
+                    .filter(method::isAnnotationPresent)
+                    .collect(Collectors.toCollection(ArrayDeque::new))) { // ArrayDeque is faster than a HashSet
                 final Annotation annotation = method.getAnnotation(aClass);
                 final PermissibleAttachment<Annotation> attachment = getPermissibleAttachment(aClass);
 
@@ -80,16 +84,19 @@ public class CommandProcessor {
 
             objects[0] = sender; //The first parameter is always the sender
 
-            StringBuilder strBuilder = new StringBuilder(); //If the parameter is a string and is the last param in the method then we concat the arguments.
+            //If the parameter is a string and is the last
+            // param in the method then we concat the arguments.
+            StringBuilder strBuilder = new StringBuilder();
+
             for (int i = 0; i < args.length; i++) {
-                if (method.getParameterCount() <= i + 1) {
+                if (method.getParameterCount() <= i + 1)
                     continue;
-                }
 
                 final Parameter parameter = method.getParameters()[i + 1];
 
                 if (!zetsu.getParameterAdapters().containsKey(parameter.getType())) {
-                    sender.sendMessage(ChatColor.RED + "This command is incorrectly setup! Please fix immediately. (Error: Parameter Type does not have an adapter)");
+                    sender.sendMessage(ChatColor.RED + "This command is incorrectly setup!" +
+                            " Please fix immediately. (Error: Parameter Type does not have an adapter)");
                     return;
                 }
 
@@ -102,7 +109,8 @@ public class CommandProcessor {
                 }
 
                 try {
-                    objects[i + 1] = strBuilder.length() != 0 ? strBuilder.toString().trim() : adapter.process(args[i].trim());
+                    objects[i + 1] = strBuilder.length() != 0 ?
+                            strBuilder.toString().trim() : adapter.process(args[i].trim());
 
                     if (objects[i + 1] == null) {
                         adapter.processException(sender, args[i], new NullPointerException());
@@ -117,7 +125,8 @@ public class CommandProcessor {
             try {
                 method.invoke(command.getObject(), objects);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                sender.sendMessage(ChatColor.RED + "An error occurred while processing this command. Please contact a developer and report this as a bug.");
+                sender.sendMessage(ChatColor.RED + "An error occurred while processing" +
+                        " this command. Please contact a developer and report this as a bug.");
                 e.printStackTrace();
             }
         };
@@ -129,7 +138,10 @@ public class CommandProcessor {
         }
     }
 
-    private void sendRequiredArgsMessage(@NotNull CommandSender sender, @NotNull Method method, @NotNull List<String> args, @NotNull String label) {
+    private void sendRequiredArgsMessage(@NotNull CommandSender sender,
+                                         @NotNull Method method,
+                                         @NotNull List<String> args,
+                                         @NotNull String label) {
         final StringBuilder builder = new StringBuilder();
         builder.append(ChatColor.RED).append("Invalid Usage: /").append(label).append(" ");
 
