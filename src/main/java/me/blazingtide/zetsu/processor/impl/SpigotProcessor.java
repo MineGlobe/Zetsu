@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SpigotProcessor extends CommandProcessor implements CommandExecutor {
 
@@ -62,7 +63,8 @@ public class SpigotProcessor extends CommandProcessor implements CommandExecutor
     }
 
     private void sendHelpMessage(@NotNull String label, int page, @NotNull CommandSender sender) {
-        final ArrayList<String> commands = Lists.newArrayList();
+        List<CachedCommand> cachedCommands = zetsu.getLabelMap().get(label);
+        final String[] commands = new String[cachedCommands.size()];
 
         sender.sendMessage(ChatColor.GRAY.toString() +
                 ChatColor.STRIKETHROUGH + "----------------------------------------");
@@ -70,7 +72,8 @@ public class SpigotProcessor extends CommandProcessor implements CommandExecutor
                 + ChatColor.GRAY + " -" + ChatColor.WHITE + " (Command Help)");
         sender.sendMessage(" ");
 
-        for (CachedCommand command : zetsu.getLabelMap().get(label)) {
+        int index = 0;
+        for (CachedCommand command : cachedCommands) {
             final Method method = command.getMethod();
             final StringBuilder builder = new StringBuilder();
 
@@ -84,7 +87,7 @@ public class SpigotProcessor extends CommandProcessor implements CommandExecutor
                 }
             }
 
-            commands.add(" " + ChatColor.YELLOW + "/" + label + " " +
+            commands[index] = (" " + ChatColor.YELLOW + "/" + label + " " +
                     String.join(" ", command.getArgs()) + " " +
                     builder.toString().trim() + ChatColor.GRAY + " - "
                     + ChatColor.WHITE + command.getDescription());
@@ -94,13 +97,13 @@ public class SpigotProcessor extends CommandProcessor implements CommandExecutor
         int end = start + MAX_ELEMENTS_HELP_PAGE;
 
         for (int i = start; i < end; i++) {
-            if (commands.size() <= i) {
+            if (commands.length <= i) {
                 continue;
             }
-            sender.sendMessage(commands.get(i));
+            sender.sendMessage(commands[i]);
         }
 
-        int maxPage = commands.size() / MAX_ELEMENTS_HELP_PAGE + 1;
+        int maxPage = commands.length / MAX_ELEMENTS_HELP_PAGE + 1;
 
         sender.sendMessage(" ");
         sender.sendMessage(ChatColor.GOLD + "You're on page " + ChatColor.WHITE + page +

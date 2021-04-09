@@ -24,22 +24,28 @@ import java.util.*;
 @AllArgsConstructor
 public class TabCompleteListener implements TabCompleter {
 
-    private final @NotNull Map<CachedCommand, Map<Integer, CachedTabComplete>> completionsCachce = Maps.newHashMap(); //Instead of looping every time, we store the constant args ONCE
+    //Instead of looping every time, we store the constant args ONCE
+    private final Map<CachedCommand, Map<Integer, CachedTabComplete>> completionsCache =
+            Maps.newLinkedHashMap();
 
-    private final @NotNull Zetsu zetsu;
-    private final @NotNull TabCompleteHandler handler;
-    private final @NotNull CommandProcessor processor;
+    private final Zetsu zetsu;
+    private final TabCompleteHandler handler;
+    private final CommandProcessor processor;
 
     @Override
     @Nullable
-    public List<String> onTabComplete(@NotNull CommandSender sender, @Nullable Command ignored, @NotNull String label, @NotNull String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender,
+                                      @Nullable Command ignored,
+                                      @NotNull String label,
+                                      @NotNull String[] args) {
         final CachedCommand command = processor.find(label.trim(), args);
 
         if (command == null) {
-            return null; //should not happen but just incase
+            return null; //should not happen but just in case
         }
 
-        List<String> toReturn = handler.requestSubcommands(args.length != 0 ? label + Zetsu.CMD_SPLITTER + StringUtils.join(args, Zetsu.CMD_SPLITTER) : label);
+        List<String> toReturn = handler.requestSubcommands(args.length != 0 ?
+                label + Zetsu.CMD_SPLITTER + StringUtils.join(args, Zetsu.CMD_SPLITTER) : label);
 
         if (toReturn == null) {
             toReturn = Lists.newArrayList();
@@ -47,7 +53,7 @@ public class TabCompleteListener implements TabCompleter {
 
         int start = args.length - command.getArgs().size();
 
-        Map<Integer, CachedTabComplete> cache = completionsCachce.computeIfAbsent(command, value -> {
+        Map<Integer, CachedTabComplete> cache = completionsCache.computeIfAbsent(command, value -> {
             Map<Integer, CachedTabComplete> completions = Maps.newHashMap();
 
             int i = 1;

@@ -8,14 +8,13 @@ import me.blazingtide.zetsu.tabcomplete.listener.TabCompleteListener;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TabCompleteHandler {
 
-    private final Map<String, List<String>> subcommandCache = Maps.newHashMap(); //Instead of looping every time, we store the sub commands and loop ONCE. (under the impression sub commands won't be created mid runtime)
+    // Instead of looping every time, we store the sub commands and loop ONCE.
+    // Under the impression sub commands won't be created mid runtime.
+    private final Map<String, List<String>> subcommandCache = Maps.newLinkedHashMap();
 
     private final Zetsu zetsu;
 
@@ -29,12 +28,12 @@ public class TabCompleteHandler {
     }
 
     @Deprecated
-    public Set<String> request(String command) {
+    public Collection<String> request(String command) {
         throw new UnsupportedOperationException("Unfinished");
     }
 
     @Nullable
-    public List<String> requestSubcommands(@Nullable String label) {
+    public Collection<String> requestSubcommands(@Nullable String label) {
         if (label == null) {
             return null;
         }

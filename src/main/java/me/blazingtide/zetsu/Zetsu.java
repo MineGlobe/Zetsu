@@ -1,6 +1,7 @@
 package me.blazingtide.zetsu;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import me.blazingtide.zetsu.adapters.ParameterAdapter;
@@ -27,9 +28,17 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @Getter
 public class Zetsu {
+
+    // Dedicated executor for Zetsu
+    public static final Executor EXECUTOR = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
+            .setNameFormat("Zetsu Thread - %1$d")
+            .build());
+
     public static @NotNull String CMD_SPLITTER = " "; //Splitter for commands / arguments
 
     // Storing labels & commands associated with the label is faster

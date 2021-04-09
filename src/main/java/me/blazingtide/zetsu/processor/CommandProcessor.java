@@ -55,7 +55,8 @@ public class CommandProcessor {
             final Object[] objects = new Object[method.getParameterCount()];
 
             if (method.getParameterCount() <= 0) {
-                sender.sendMessage(ChatColor.RED + "This command is incorrectly setup! Please fix immediately. (Error: Invalid amount of method parameters)");
+                sender.sendMessage(ChatColor.RED + "This command is incorrectly setup!" +
+                        " Please fix immediately. (Error: Invalid amount of method parameters)");
                 return;
             }
 
@@ -132,10 +133,11 @@ public class CommandProcessor {
         };
 
         if (command.isAsync()) {
-            Bukkit.getScheduler().runTaskAsynchronously(zetsu.getPlugin(), runnable);
-        } else {
-            runnable.run();
+            Zetsu.EXECUTOR.execute(runnable);
+            return;
         }
+
+        runnable.run();
     }
 
     private void sendRequiredArgsMessage(@NotNull CommandSender sender,
