@@ -91,6 +91,7 @@ public class SpigotProcessor extends CommandProcessor implements CommandExecutor
                     String.join(" ", command.getArgs()) + " " +
                     builder.toString().trim() + ChatColor.GRAY + " - "
                     + ChatColor.WHITE + command.getDescription());
+            index++;
         }
 
         int start = (page - 1) * MAX_ELEMENTS_HELP_PAGE;
