@@ -53,7 +53,7 @@ public class Zetsu {
     private @Nullable CommandMap commandMap = getCommandMap();
 
     @Setter
-    private @NotNull String fallbackPrefix = "zetsu";
+    private @NotNull String fallbackPrefix = "commands";
 
     @Setter
     @Getter
@@ -132,8 +132,8 @@ public class Zetsu {
                         BukkitCommand bukkitCommand = new BukkitCommand(
                                 command.getLabel(),
                                 processor,
-                                tabCompleteHandler
-                        );
+                                tabCompleteHandler,
+                                fallbackPrefix);
                         bukkitCommand.setDescription(command.getDescription());
 
                         commandMap.register(fallbackPrefix, bukkitCommand);
